@@ -458,10 +458,11 @@ def handle_callback_query(call):
 # --- Flask Server for Webhook ---
 app = Flask(__name__)
 
-@app.before_first_request
-def activate_bot():
+# Run bot webhook initialization once at app startup (Flask 3-safe)
+with app.app_context():
     print("⚡ Initializing Telegram webhook (Render/Gunicorn mode)")
     set_initial_webhook()
+
 
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
@@ -502,4 +503,5 @@ if __name__ == '__main__':
 
     # If running under Gunicorn/Render, the Procfile should start the app (e.g. gunicorn "routAfare_bot_fixed:app")
     print('Ready. If running locally uncomment app.run(...) in __main__.')
+
 
